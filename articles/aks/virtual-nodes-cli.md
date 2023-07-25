@@ -115,6 +115,22 @@ az aks enable-addons \
     --addons virtual-node \
     --subnet-name myVirtualNodeSubnet
 ```
+## Create a role assignment for the ClientID of the ACI Connector to the ACI subnet.
+
+ to get the ClientID of the Aci connector:
+```azurecli-interactive
+aciConnectorclientID=$(az aks show --resource-group myResourceGroup --name myAKSCluster --query addonProfiles.aciConnectorLinux.identity.clientId -o tsv )
+```
+to get the subnetID of the ACI subnet:
+
+```azurecli-interactive
+AciSubnetID=$(az network vnet subnet show --resource-group myResourceGroup --vnet-name myVnet --name myAKSSubnet --query id -o tsv )
+```
+Now we need to create the role assignment :
+
+```azurecli-interactive
+az role assignment create --role "Contributor" --assignee $aciConnectorclientID --scope $AciSubnetID
+```
 
 ## Connect to the cluster
 
